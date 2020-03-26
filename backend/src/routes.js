@@ -1,49 +1,21 @@
 const express = require('express');
-const crypto = require('crypto');
-const connection = require('./database/index');
+
+const OngController = require('./controllers/OngController');
+const IncidentController = require('./controllers/IncidentController');
+const ProfileController = require('./controllers/ProfileController');
+const SessionController = require('./controllers/SessionController');
 
 const routes = express.Router();
 
-/**
- * Métodos HTTP
- * 
- * GET: Acessar uma informação
- * POST: Criar uma informação
- * PUT: Alterar uma informação
- * DELETE: Deletar uma informação
-*/
+routes.post('/sessions', SessionController.create);
 
-/**
- * Tipos de parâmetros:
- * 
- * Query Params: Nomeados enviados na rota, após '?' (Uso em filtros, paginação, ...)
- * Route Params: Utilizado na identificação de recursos (ex.: app.get('/users/:id') )
- * Request Body: Corpo da requsição, sendo utilizado para criar ou alterar algum usuário
- * 
- * USO
- * const query_params = req.query;
- * const route_params = req.params;
- * const body_params = req.body;
- */
-routes.post('/ongs', async (req, res) => {
-    const { name, email, whatsapp, city, uf } = req.body;
+routes.get('/ongs', OngController.index);
+routes.post('/ongs', OngController.create);
 
-    const id = crypto.randomBytes(4).toString('HEX');
+routes.get('/profile', ProfileController.index);
 
-    await connection('ongs').insert({
-        id,
-        name,
-        email,
-        whatsapp,
-        city,
-        uf,
-    });
-
-    return res.json({ id });
-});
-
-routes.post('/users', (req, res) => {
-    return res.json({});
-});
+routes.get('/incidents', IncidentController.index);
+routes.post('/incidents', IncidentController.create);
+routes.delete('/incidents/:id', IncidentController.delete);
 
 module.exports = routes;
